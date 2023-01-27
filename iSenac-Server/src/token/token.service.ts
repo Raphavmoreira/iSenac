@@ -15,8 +15,8 @@ export class TokenService {
     private authService: AuthService
   ) {}
 
-  async save(hash: string, username: string){
-    let objToken = await this.tokenRepository.findOne({username: username})
+  async save(hash: string, usuario: string){
+    let objToken = await this.tokenRepository.findOne({usuario: usuario})
     if (objToken){
       this.tokenRepository.update(objToken.id, {
         hash: hash
@@ -24,7 +24,7 @@ export class TokenService {
     }else{
       this.tokenRepository.insert({
         hash: hash,
-        username: username
+        usuario: usuario
       })
     }
   }
@@ -32,7 +32,7 @@ export class TokenService {
   async refreshToken(oldToken: string){
     let objToken = await this.tokenRepository.findOne({ hash: oldToken })
     if (objToken){
-      let usuario = await this.usuarioService.findOne(objToken.username)      
+      let usuario = await this.usuarioService.findOne(objToken.usuario)      
       return this.authService.login(usuario)
     }else{
       return new HttpException({
@@ -45,10 +45,14 @@ export class TokenService {
     token = token.replace("Bearer ","").trim()
     let objToken: Token = await this.tokenRepository.findOne({hash: token})
     if (objToken){
-      let usuario = await this.usuarioService.findOne(objToken.username)      
+      let usuario = await this.usuarioService.findOne(objToken.usuario)      
       return usuario
     }else{
       return null
     }
+  }
+
+  async getToken(): Promise<Token[]> {
+    return this.tokenRepository.find();
   }
 }

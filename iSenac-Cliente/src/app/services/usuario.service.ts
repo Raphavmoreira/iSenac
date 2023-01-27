@@ -24,7 +24,4 @@ export class UsuarioService {
     return this.httpClient.post(usuarioURL+'login', postData);
   }
 
-  logintoken(){
-
-  }
 }

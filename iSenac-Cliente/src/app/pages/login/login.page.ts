@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ToastService } from './../../services/toast.service';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { AuthService } from 'src/app/services/auth.service';
-import { Storage } from '@ionic/storage';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -15,14 +15,56 @@ import { Storage } from '@ionic/storage';
 })
 export class LoginPage implements OnInit {
 
+  
+  username!: string;
+  password!: string;
+
   constructor(
+    private http: HttpClient,
+    public navCtrl: NavController,
+    ) { }
+
+
+  
+  ngOnInit(): void {
+  }
+
+
+
+  onSubmit() {
+    this.logar(this.username, this.password);
+  }
+
+  logar(usuario: string, senha: string) {
+    const url = 'http://localhost:3000/usuario/login';
+    const body = JSON.stringify({ usuario, senha });
+    const headers = new HttpHeaders();
+    headers.set('Content-Type', 'application/json');      
+    this.http.post(url, body, {headers: headers}).subscribe(
+      (response) => {
+        // handle successful response
+        console.log('Usuário autenticado.', response)
+        console.log("Dados Enviados", body);
+        console.log("Url Enviados", url);
+        console.log("Headers Enviados", headers);    
+      },
+      () => {
+        // handle error
+        this.navCtrl.navigateForward('/inicio');
+      }
+    );
+  }
+
+}
+
+/* 26/01/2023 
+constructor(
     private formBuilder:  FormBuilder,
     private usersService: UsuarioService,
     private router: Router,
     private toastService: ToastService,
     private http: HttpClient,
     private authService: AuthService,
-    private storage: Storage
   ) { }
 
   ngOnInit(): void {
@@ -35,37 +77,15 @@ export class LoginPage implements OnInit {
   }
   formulariologin!: FormGroup;
 
-  /*validaForm(){
-    this.formulariologin = this.formBuilder.group({
-      usuario: ['', [Validators.required]],
-      senha: ['', [Validators.required]]
-    });
-  }*/
-  
   login: Login = {
     usuario: "",
     senha: ""
   }
- 
-  /*validateInputs() {
-    console.log(this.login);
-    let usuario = this.login.usuario.trim();
-    let senha = this.login.senha.trim();
-    return (
-      this.login.usuario &&
-      this.login.senha &&
-      usuario.length > 0 &&
-      senha.length > 0
-    );
-  }*/
-
 
   logar() {
-    this.storage.set('usuario', this.formulariologin.value.usuario);
-    this.storage.set('senha', this.formulariologin.value.senha);
     const url = 'http://localhost:3000/usuario/login';
-    const body = JSON.stringify({usuario: this.storage.get('usuario'),
-                                  senha: this.storage.get('senha')});
+    const body = JSON.stringify({usuario: this.formulariologin.value.usuario,
+                                  senha: this.formulariologin.value.senha});
     const headers = new HttpHeaders();
     headers.set('Content-Type', 'application/json');     
     this.http.post(url, body, {headers: headers}).subscribe(
@@ -76,8 +96,7 @@ export class LoginPage implements OnInit {
                 this.formulariologin.reset();
             }
         );
-}
-
+*/
  /* logar() {
     if (this.validateInputs()){
     const url = 'http://localhost:3000/usuario/login';
@@ -99,7 +118,23 @@ export class LoginPage implements OnInit {
     );
   }
 }*/
-
+ /*validaForm(){
+    this.formulariologin = this.formBuilder.group({
+      usuario: ['', [Validators.required]],
+      senha: ['', [Validators.required]]
+    });
+  }*/
+  /*validateInputs() {
+    console.log(this.login);
+    let usuario = this.login.usuario.trim();
+    let senha = this.login.senha.trim();
+    return (
+      this.login.usuario &&
+      this.login.senha &&
+      usuario.length > 0 &&
+      senha.length > 0
+    );
+  }*/
   /*
 
   let header = new HttpHeaders({ "Authorization": "Bearer "+token});
@@ -178,4 +213,3 @@ export class LoginPage implements OnInit {
     });
   }
   */
-}

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { Usuario } from 'src/app/interface/usuario'; 
 import { UsuarioService } from 'src/app/services/usuario.service';
 
@@ -12,7 +14,8 @@ export class RegisterPage implements OnInit {
 
   constructor(
     private formBuilder:  FormBuilder,
-    private usersService: UsuarioService
+    private usersService: UsuarioService,
+    public navCtrl: NavController
   ) { }
 
   ngOnInit(): void {
@@ -52,6 +55,7 @@ export class RegisterPage implements OnInit {
     .subscribe({
     next: (res) => {
     console.log(res);
+    this.navCtrl.navigateForward('/login');
     },
     error: (e) => console.error(e)
     });
